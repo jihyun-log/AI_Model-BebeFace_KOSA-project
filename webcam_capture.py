@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 from yolov8 import YOLOv8
 
+import requests
+
 # == Model =============================================================================================================
 # Initialize YOLOv8 object detector
 model_path = "/Users/jihyun/PycharmProjects/BebeFace/models/best.onnx"
@@ -20,6 +22,20 @@ confidence_threshold = 0.7
 # Variables for tracking consecutive frames
 positive_frames = 0
 continous_frames = 0
+# ======================================================================================================================
+
+# == api ===============================================================================================================
+def send_get_request(api_url):
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+        return response.text  # You can return the response content or other relevant information
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to send GET request: {e}")
+        return None
+
+# API endpoint URL
+positive_api_url = "https://wondrous-pudding-b2d415.netlify.app/api/push/smile"
 # ======================================================================================================================
 
 # == webcam ============================================================================================================
@@ -53,10 +69,15 @@ while cap.isOpened():
             cv2.putText(combined_img, "POSITIVE DETECTION", (10, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
+            # Send GET request and print the response
+            response_content = send_get_request(positive_api_url)
+            if response_content is not None:
+                print(f"Response from the server:\n{response_content}")
+
         if positive_limit < positive_frames < positive_limit + 6:
             # 여기에서 프레임을 이미지 파일로 저장하거나 추가 작업을 수행할 수 있습니다.
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            save_dir = "/Users/jihyun/PycharmProjects/ONNX-YOLOv8-Object-Detection/save/capture"
+            save_dir = "/Users/jihyun/PycharmProjects/BebeFace/save/capture"
             file_name = f"capture_{timestamp}.png"
             file_path = os.path.join(save_dir, file_name)
             cv2.imwrite(file_path, frame)
