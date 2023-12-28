@@ -2,6 +2,7 @@
 
  * Check the **requirements.txt** file.
  * For ONNX, if you have a NVIDIA GPU, then install the **onnxruntime-gpu**, otherwise use the **onnxruntime** library.
+ * To use this model, you must have a model in the form of onnx. This GitHub does not include a model, so please contact us by email if you want to run it
 
 # Installation
 ```shell
